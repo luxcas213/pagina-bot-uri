@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor</title>
+</head>
+<body>
+    <h1>Comandos del Servidor</h1>
+
+    <button onclick="verEstadoBot()">Ver estado del bot</button>
+    <button onclick="reiniciarBot()">Reiniciar bot</button>
+    <button onclick="verLogs()">Ver logs</button>
+
+    <div id="result"></div>
+
+    <script>
+        const token = new URLSearchParams(window.location.search).get('token');
+
+        function verEstadoBot() {
+            fetch(`/estado-bot?token=${token}`)
+                .then(response => response.text())
+                .then(data => document.getElementById('result').innerHTML = data);
+        }
+
+        function reiniciarBot() {
+            fetch(`/reiniciar-bot?token=${token}`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => document.getElementById('result').innerHTML = data);
+        }
+
+        function verLogs() {
+            fetch(`/logs?token=${token}`)
+                .then(response => response.text())
+                .then(data => document.getElementById('result').innerHTML = data);
+        }
+    </script>
+</body>
+</html>

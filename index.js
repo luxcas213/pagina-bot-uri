@@ -86,7 +86,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
 app.get('/logs', verifyToken, (req, res) => {
     exec('cat /home/ubuntu/tbot/nohup.out', (error, stdout, stderr) => {
         if (error) {
-            return res.send(`<h1>no se encontro los logs del bot</h1>`);
+            return res.send(`<h1>no se encontro los logs del bot</h1>, Error: ${error.message}`);
         }
         if (stderr) {
             return res.send(`stderr: ${stderr}`);
@@ -99,9 +99,10 @@ app.get('/logs', verifyToken, (req, res) => {
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     
-    const validUser = process.env.USER;
+    const validUser = process.env.USERNAME;
     const validPass = process.env.PASSWORD;
-    
+    console.log(validUser);
+    console.log(validPass);
     if (username === validUser && password === validPass) {
         const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.redirect(`/main?token=${token}`);

@@ -80,6 +80,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
                 return res.send('<h1>Bot reiniciado con éxito.</h1>');
             });
         });
+        return res.send('<h1>Bot reiniciado con éxito.</h1>');
     });
 });
 

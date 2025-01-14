@@ -11,6 +11,8 @@
     <button onclick="verEstadoBot()">Ver estado del bot</button>
     <button onclick="reiniciarBot()">Reiniciar bot</button>
     <button onclick="verLogs()">Ver logs</button>
+    <button onclick="prenderbot()">Encender bot</button>
+    <button onclick="apagarbot()">Apagar bot</button>
 
     <div id="result"></div>
 
@@ -31,6 +33,17 @@
 
         function verLogs() {
             fetch(`/logs?token=${token}`)
+                .then(response => response.text())
+                .then(data => document.getElementById('result').innerHTML = data);
+        }
+
+        function prenderbot() {
+            fetch(`/encender-bot?token=${token}`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => document.getElementById('result').innerHTML = data);
+        }
+        function apagarbot() {
+            fetch(`/apagar-bot?token=${token}`, { method: 'POST' })
                 .then(response => response.text())
                 .then(data => document.getElementById('result').innerHTML = data);
         }

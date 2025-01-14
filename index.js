@@ -96,6 +96,59 @@ app.get('/logs', verifyToken, (req, res) => {
     });
 });
 
+app.get('/apagar-bot', verifyToken, (req, res) => {
+    //buscar id proceso
+    exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
+        if (error) {
+            return res.send(`Error: ${error.message}`);
+        }
+        if (stderr) {
+            return res.send(`stderr: ${stderr}`);
+        }
+        if (!stdout) 
+        {
+            return res.send('<h1>No se encontró el bot en ejecución.</h1>');
+        }
+
+        //matar
+        exec(`kill ${stdout}`, (errorKill, stdoutKill, stderrKill) => {
+            if (errorKill) {
+                return res.send(`Error al matar el proceso: ${errorKill.message}`);
+            }
+            if (stderrKill) {
+                return res.send(`stderr: ${stderrKill}`);
+            }
+            return res.send('<h1>Bot apagado con éxito.</h1>');
+        });
+    });
+});
+
+app.get('/encender-bot', verifyToken, (req, res) => {
+    //buscar id proceso
+    exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
+        if (error) {
+            return res.send(`Error: ${error.message}`);
+        }
+        if (stderr) {
+            return res.send(`stderr: ${stderr}`);
+        }
+        if (stdout) 
+        {
+            return res.send('<h1>El bot ya está en ejecución.</h1>');
+        }
+
+        //reinicio
+        exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
+            if (errorStart) {
+                return res.send(`Error al iniciar el bot: ${errorStart.message}`);
+            }
+            if (stderrStart) {
+                return res.send(`stderr: ${stderrStart}`);
+            }
+            return res.send('<h1>Bot encendido con éxito.</h1>');
+        });
+    });
+});
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;

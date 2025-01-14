@@ -70,7 +70,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
                 return res.send(`stderr: ${stderrKill}`);
             }
             //reinicio
-            exec('nohup /home/ubuntu/tbot/npm start &', (errorStart, stdoutStart, stderrStart) => {
+            exec('nohup npm start --prefix /home/ubuntu/tbot/ &', (errorStart, stdoutStart, stderrStart) => {
                 if (errorStart) {
                     return res.send(`Error al iniciar el bot: ${errorStart.message}`);
                 }

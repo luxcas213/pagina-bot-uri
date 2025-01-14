@@ -70,7 +70,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
                 return res.send(`stderr: ${stderrKill}`);
             }
             //reinicio
-            exec('nohup/home/ubuntu/tbot/npm start &', (errorStart, stdoutStart, stderrStart) => {
+            exec('nohup /home/ubuntu/tbot/npm start &', (errorStart, stdoutStart, stderrStart) => {
                 if (errorStart) {
                     return res.send(`Error al iniciar el bot: ${errorStart.message}`);
                 }
@@ -84,7 +84,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
 });
 
 app.get('/logs', verifyToken, (req, res) => {
-    exec('cat /home/ubuntu/tbot/nohup.out', (error, stdout, stderr) => {
+    exec('tail -n 30 /home/ubuntu/tbot/nohup.out', (error, stdout, stderr) => {
         if (error) {
             return res.send(`<h1>no se encontro los logs del bot</h1>, Error: ${error.message}`);
         }

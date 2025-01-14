@@ -51,7 +51,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
     //buscar id proceso
     exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
         if (error) {
-            return res.send(`Error: ${error.message}`);
+            return res.send(`<h1>No se encontró el bot en ejecución.</h1> ,Error: ${error.message}`);
         }
         if (stderr) {
             return res.send(`stderr: ${stderr}`);
@@ -72,7 +72,7 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
             //reinicio
             exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
                 if (errorStart) {
-                    return res.send(`Error al iniciar el bot: ${errorStart.message}`);
+                    return res.send(`<h1>Error al iniciar el bot</h1> ,   Error: ${errorStart.message}`);
                 }
                 if (stderrStart) {
                     return res.send(`stderr: ${stderrStart}`);
@@ -155,13 +155,12 @@ app.post('/login', (req, res) => {
     
     const validUser = process.env.USERNAME;
     const validPass = process.env.PASSWORD;
-    console.log(validUser);
-    console.log(validPass);
+    
     if (username === validUser && password === validPass) {
         const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.redirect(`/main?token=${token}`);
     } else {
-        res.send('<h1>Login Fallido. Intenta nuevamente <a href="/">Volver</a></h1>');
+        res.redirect('/loginfallido');
     }
 });
 
@@ -171,7 +170,9 @@ app.get('/logout', (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/login.html');
 });
-
+app.get('/loginfallido', (req, res) => {
+    res.sendFile(__dirname + '/views/loginfallido.html');
+});
 app.get('/main', verifyToken, (req, res) => {
     res.sendFile(__dirname + '/views/main.html');
 });

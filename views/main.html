@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor</title>
+    <title>Control del bot</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,13 +18,20 @@
             box-sizing: border-box;
         }
 
+        .wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .container {
             background-color: rgba(0, 0, 0, 0.7);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
+            min-width: 520px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -66,6 +73,40 @@
             width: 100%;
             box-sizing: border-box;
             word-wrap: break-word;
+            overflow: auto;
+        }
+
+        .status-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .status-button.off {
+            background-color: #28a745; /* Verde */
+            color: #fff;
+        }
+
+        .status-button.on {
+            background-color: #dc3545; /* Rojo */
+            color: #fff;
+        }
+
+        .status-button:hover {
+            transform: scale(1.1);
+        }
+
+        .status-button:active {
+            transform: scale(1);
         }
 
         @media (max-width: 600px) {
@@ -81,59 +122,106 @@
             button {
                 font-size: 0.9rem;
             }
+
+            .status-button {
+                width: 80px;
+                height: 80px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Comandos del BOT</h1>
-
-        <button onclick="verEstadoBot()">Ver estado del bot</button>
-        <button onclick="reiniciarBot()">Reiniciar bot</button>
-        <button onclick="verLogs()">Ver logs</button>
-        <button onclick="prenderbot()">Encender bot</button>
-        <button onclick="apagarbot()">Apagar bot</button>
-        <button onclick="logout()">Cerrar sesión</button>
-        <div id="result"></div>
+    <div class="wrapper">
+        <button id="statusButton" class="status-button off" onclick="toggleBot()">Encender</button>
+        <div class="container">
+            <h1>Comandos del BOT</h1>
+            <button onclick="verEstadoBot()">Ver estado del bot</button>
+            <button onclick="reiniciarBot()">Reiniciar bot</button>
+            <button onclick="verLogs()">Ver logs</button>
+            <button onclick="logout()">Cerrar sesión</button>
+            <div id="result"></div>
+        </div>
     </div>
 
     <script>
         const token = new URLSearchParams(window.location.search).get('token');
-        function logout(){
+        a=""
+        fetch(`/estado-bot?token=${token}`)
+        .then(response => response.text())
+        .then(data => a=data)
+        
+        if(a=="<h1>El bot está prendido.</h1>")
+        {
+            botEncendido = true
+        }
+            else if(a=="<h1>El bot está apagado.</h1>")
+        {
+            botEncendido = false
+        }
+        else
+        {
+            botEncendido = false
+        }
+
+        function logout() {
             fetch(`/logout/`, { method: 'GET' })
                 .then(response => response.text())
-                .then(data => window.location.href = '/');
-                
+                .then(() => window.location.href = '/')
+                .catch(error => alert('Error cerrando sesión: ' + error));
         }
+
         function verEstadoBot() {
             fetch(`/estado-bot?token=${token}`)
                 .then(response => response.text())
-                .then(data => document.getElementById('result').innerHTML = data);
+                .then(data => document.getElementById('result').innerHTML = data)
+                .catch(error => document.getElementById('result').innerHTML = 'Error al obtener el estado del bot.');
         }
 
         function reiniciarBot() {
             fetch(`/reiniciar-bot?token=${token}`, { method: 'POST' })
                 .then(response => response.text())
-                .then(data => document.getElementById('result').innerHTML = data);
+                .then(data => document.getElementById('result').innerHTML = data)
+                .catch(error => document.getElementById('result').innerHTML = 'Error al reiniciar el bot.');
         }
 
         function verLogs() {
             fetch(`/logs?token=${token}`)
                 .then(response => response.text())
-                .then(data => document.getElementById('result').innerHTML = data);
+                .then(data => document.getElementById('result').innerHTML = data)
+                .catch(error => document.getElementById('result').innerHTML = 'Error al cargar los logs.');
         }
 
-        function prenderbot() {
-            fetch(`/encender-bot?token=${token}`, { method: 'POST' })
+        function toggleBot() {
+            const action = botEncendido ? 'apagar-bot' : 'encender-bot';
+            const button = document.getElementById('statusButton');
+            fetch(`/${action}?token=${token}`, { method: 'POST' })
                 .then(response => response.text())
-                .then(data => document.getElementById('result').innerHTML = data);
-        }
-        function apagarbot() {
-            fetch(`/apagar-bot?token=${token}`, { method: 'POST' })
-                .then(response => response.text())
-                .then(data => document.getElementById('result').innerHTML = data);
+                .then(data => {
+                    a=""
+                    fetch(`/estado-bot?token=${token}`)
+                    .then(response => response.text())
+                    .then(data => a=data)
+                    
+                    if(a=="<h1>El bot está prendido.</h1>")
+                    {
+                        botEncendido = true
+                    }
+                        else if(a=="<h1>El bot está apagado.</h1>")
+                    {
+                        botEncendido = false
+                    }
+                    else
+                    {
+                        botEncendido = false
+                    }
+                    button.textContent = botEncendido ? 'Apagar' : 'Encender';
+                    button.classList.toggle('on', botEncendido);
+                    button.classList.toggle('off', !botEncendido);
+                    document.getElementById('result').innerHTML = data;
+                })
+                .catch(error => document.getElementById('result').innerHTML = `Error al ${botEncendido ? 'apagar' : 'encender'} el bot.`);
         }
     </script>
 </body>
 </html>
-

@@ -96,7 +96,7 @@ app.get('/logs', verifyToken, (req, res) => {
     });
 });
 
-app.get('/apagar-bot', verifyToken, (req, res) => {
+app.post('/apagar-bot', verifyToken, (req, res) => {
     //buscar id proceso
     exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
         if (error) {
@@ -123,7 +123,7 @@ app.get('/apagar-bot', verifyToken, (req, res) => {
     });
 });
 
-app.get('/encender-bot', verifyToken, (req, res) => {
+app.post('/encender-bot', verifyToken, (req, res) => {
     //buscar id proceso
     exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
         if (error) {
@@ -165,6 +165,9 @@ app.post('/login', (req, res) => {
     }
 });
 
+app.get('/logout', (req, res) => {
+    res.redirect('/');
+});
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/login.html');
 });

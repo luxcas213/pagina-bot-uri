@@ -124,29 +124,16 @@ app.post('/apagar-bot', verifyToken, (req, res) => {
 });
 
 app.post('/encender-bot', verifyToken, (req, res) => {
-    //buscar id proceso
-    exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
-        if (stderr) {
-            return res.send(`stderr: ${stderr}`);
+    exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
+        if (errorStart) {
+            return res.send(`<h1>Error al iniciar el bot</h1> ,   Error: ${errorStart.message}`);
         }
-        if (stdout) 
-        {
-            return res.send('<h1>El bot ya está en ejecución.</h1>');
+        if (stderrStart) {
+            return res.send(`stderr: ${stderrStart}`);
         }
-        if (error) {
-            return exec('npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
-                if (errorStart) 
-                {
-                    return res.send(`Error al iniciar el bot: ${errorStart.message}`);
-                }
-                if (stderrStart) 
-                {
-                    return res.send(`stderr: ${stderrStart}`);
-                }
-                return res.send('<h1>Bot encendido con éxito.</h1>');
-            });
-        }
+        return res.send('<h1>Bot iniciado con éxito.</h1>');
     });
+    return res.send('<h1>Bot iniciado con éxito.</h1>');
 });
 
 app.post('/login', (req, res) => {

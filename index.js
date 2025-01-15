@@ -134,7 +134,7 @@ app.post('/encender-bot', verifyToken, (req, res) => {
             return res.send('<h1>El bot ya está en ejecución.</h1>');
         }
         if (error) {
-            return exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
+            return exec('nohup npm --prefix /home/ubuntu/tbot/ start > nohup.out 2>&1 < /dev/null &', (errorStart, stdoutStart, stderrStart) => {
                 if (errorStart) 
                 {
                     return res.send(`Error al iniciar el bot: ${errorStart.message}`);

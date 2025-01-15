@@ -127,7 +127,15 @@ app.post('/encender-bot', verifyToken, (req, res) => {
     //buscar id proceso
     exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
         if (error) {
-            return res.send(`Error: ${error.message}`);
+            exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
+                if (errorStart) {
+                    return res.send(`Error al iniciar el bot: ${errorStart.message}`);
+                }
+                if (stderrStart) {
+                    return res.send(`stderr: ${stderrStart}`);
+                }
+                return res.send('<h1>Bot encendido con éxito.</h1>');
+            });
         }
         if (stderr) {
             return res.send(`stderr: ${stderr}`);
@@ -137,16 +145,7 @@ app.post('/encender-bot', verifyToken, (req, res) => {
             return res.send('<h1>El bot ya está en ejecución.</h1>');
         }
 
-        //reinicio
-        exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
-            if (errorStart) {
-                return res.send(`Error al iniciar el bot: ${errorStart.message}`);
-            }
-            if (stderrStart) {
-                return res.send(`stderr: ${stderrStart}`);
-            }
-            return res.send('<h1>Bot encendido con éxito.</h1>');
-        });
+        
     });
 });
 

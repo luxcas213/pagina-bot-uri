@@ -127,7 +127,7 @@ app.post('/encender-bot', verifyToken, (req, res) => {
     //buscar id proceso
     exec('pgrep -f "^node .$"', (error, stdout, stderr) => {
         if (error) {
-            exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
+            return exec('nohup npm start --prefix /home/ubuntu/tbot/', (errorStart, stdoutStart, stderrStart) => {
                 if (errorStart) {
                     return res.send(`Error al iniciar el bot: ${errorStart.message}`);
                 }

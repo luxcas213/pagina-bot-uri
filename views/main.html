@@ -21,7 +21,7 @@
         .wrapper {
             display: flex;
             align-items: center;
-            flex-direction:row;
+            flex-direction: row;
             gap: 20px;
         }
 
@@ -73,7 +73,7 @@
             width: 100%;
             box-sizing: border-box;
             word-wrap: break-word;
-            overflow:scroll;
+            overflow: auto;
         }
 
         .status-button {
@@ -111,12 +111,14 @@
 
         @media (max-width: 800px) {
             .container {
-                width: 90%;
+                width: 70vw;
                 padding: 20px;
             }
-            .wrapper{
+
+            .wrapper {
                 flex-direction: column;
             }
+
             h1 {
                 font-size: 1.5rem;
             }
@@ -148,29 +150,50 @@
 
     <script>
         const token = new URLSearchParams(window.location.search).get('token');
-        a=""
-        fetch(`/estado-bot?token=${token}`)
-        .then(response => response.text())
-        .then(data => a=data);{
-            if(a=="<h1>El bot está prendido.</h1>")
-            {
-                botEncendido = true
-            }
-            else if(a=="<h1>El bot está apagado.</h1>")
-            {
-                botEncendido = false
-            }
-            else
-            {
-                botEncendido = false
-            }
+        let botEncendido = false;
+
+        // Inicializar el estado del botón al cargar la página
+        function inicializarBoton() {
+            fetch(`/estado-bot?token=${token}`)
+                .then(response => response.text())
+                .then(data => {
+                    botEncendido = data.includes('El bot está prendido');
+                    actualizarBoton();
+                })
+                .catch(error => {
+                    console.error('Error al obtener el estado inicial:', error);
+                    document.getElementById('result').innerHTML = "Error al cargar el estado inicial.";
+                });
         }
-        
-        
+
+        // Actualizar el texto y la clase del botón
+        function actualizarBoton() {
+            const button = document.getElementById('statusButton');
+            button.textContent = botEncendido ? 'Apagar' : 'Encender';
+            button.classList.toggle('on', botEncendido);
+            button.classList.toggle('off', !botEncendido);
+        }
+
+        // Cambiar el estado del bot
+        function toggleBot() {
+            const action = botEncendido ? 'apagar-bot' : 'encender-bot';
+            fetch(`/${action}?token=${token}`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.includes('éxito')) {
+                        botEncendido = !botEncendido; // Cambiar estado solo si el servidor confirma éxito
+                        actualizarBoton();
+                    }
+                    document.getElementById('result').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerHTML = `Error al ${botEncendido ? 'apagar' : 'encender'} el bot.`;
+                });
+        }
 
         function logout() {
             fetch(`/logout/`, { method: 'GET' })
-                .then(response => response.text())
                 .then(() => window.location.href = '/')
                 .catch(error => alert('Error cerrando sesión: ' + error));
         }
@@ -196,36 +219,7 @@
                 .catch(error => document.getElementById('result').innerHTML = 'Error al cargar los logs.');
         }
 
-        function toggleBot() {
-            const action = botEncendido ? 'apagar-bot' : 'encender-bot';
-            const button = document.getElementById('statusButton');
-            fetch(`/${action}?token=${token}`, { method: 'POST' })
-                .then(response => response.text())
-                .then(data => {
-                    a=""
-                    fetch(`/estado-bot?token=${token}`)
-                    .then(response => response.text())
-                    .then(data => a=data)
-                    
-                    if(a=="<h1>El bot está prendido.</h1>")
-                    {
-                        botEncendido = true
-                    }
-                        else if(a=="<h1>El bot está apagado.</h1>")
-                    {
-                        botEncendido = false
-                    }
-                    else
-                    {
-                        botEncendido = false
-                    }
-                    button.textContent = botEncendido ? 'Apagar' : 'Encender';
-                    button.classList.toggle('on', botEncendido);
-                    button.classList.toggle('off', !botEncendido);
-                    document.getElementById('result').innerHTML = data;
-                })
-                .catch(error => document.getElementById('result').innerHTML = `Error al ${botEncendido ? 'apagar' : 'encender'} el bot.`);
-        }
+        document.addEventListener('DOMContentLoaded', inicializarBoton);
     </script>
 </body>
 </html>

@@ -79,6 +79,8 @@
         .status-button {
             width: 100px;
             height: 100px;
+            min-height: 100px;
+            min-width: 100px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -92,12 +94,12 @@
         }
 
         .status-button.off {
-            background-color: #28a745; /* Verde */
+            background-color: #28a745; 
             color: #fff;
         }
 
         .status-button.on {
-            background-color: #dc3545; /* Rojo */
+            background-color: #dc3545; 
             color: #fff;
         }
 
@@ -152,7 +154,6 @@
         const token = new URLSearchParams(window.location.search).get('token');
         let botEncendido = false;
 
-        // Inicializar el estado del botón al cargar la página
         function inicializarBoton() {
             fetch(`/estado-bot?token=${token}`)
                 .then(response => response.text())
@@ -166,7 +167,7 @@
                 });
         }
 
-        // Actualizar el texto y la clase del botón
+
         function actualizarBoton() {
             const button = document.getElementById('statusButton');
             button.textContent = botEncendido ? 'Apagar' : 'Encender';
@@ -174,14 +175,14 @@
             button.classList.toggle('off', !botEncendido);
         }
 
-        // Cambiar el estado del bot
+
         function toggleBot() {
-            const action = botEncendido ? 'apagar-bot' : 'encender-bot';
+            const action = botEncendido ? 'apagar-bot' : 'reiniciar-bot';
             fetch(`/${action}?token=${token}`, { method: 'POST' })
                 .then(response => response.text())
                 .then(data => {
                     if (data.includes('éxito')) {
-                        botEncendido = !botEncendido; // Cambiar estado solo si el servidor confirma éxito
+                        botEncendido = !botEncendido; 
                         actualizarBoton();
                     }
                     document.getElementById('result').innerHTML = data;

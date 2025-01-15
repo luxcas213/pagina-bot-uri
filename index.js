@@ -77,10 +77,10 @@ app.post('/reiniciar-bot', verifyToken, (req, res) => {
                 if (stderrStart) {
                     return res.send(`stderr: ${stderrStart}`);
                 }
-                return res.send('<h1>Bot reiniciado con éxito.</h1>');
+                return res.send('<h1>Bot iniciado con éxito.</h1>');
             });
         });
-        return res.send('<h1>Bot reiniciado con éxito.</h1>');
+        return res.send('<h1>Bot iniciado con éxito.</h1>');
     });
 });
 
